@@ -42,8 +42,10 @@
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    _textLabel.text = nil;
     _gradientLayer.mask = _textLabel.layer;
     [self __caz__gradientAnimate];
+    [self __caz__textAnimate:@"Guten Morgen!"];
     
     [super viewDidAppear:animated];
 }
@@ -63,6 +65,24 @@
     gradient.duration = 2.5;
     gradient.repeatCount = HUGE;
     [_gradientLayer addAnimation:gradient forKey:nil];
+}
+
+- (void)__caz__textAnimate:(NSString*)text
+{
+    if (text.length) {
+        _textLabel.text = [NSString stringWithFormat:@"%@%@", _textLabel.text ?: @"", [text substringToIndex:1]];
+        __caz__delay(0.4, ^{
+            [self __caz__textAnimate:[text substringFromIndex:1]];
+        });
+    }
+}
+
+FOUNDATION_STATIC_INLINE void __caz__delay(NSTimeInterval delay, void (^ __nonnull completion)(void))
+{
+    dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, delay * NSEC_PER_SEC);
+    dispatch_after(when, dispatch_get_main_queue(), ^{
+        completion();
+    });
 }
 
 @end
